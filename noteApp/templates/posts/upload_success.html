@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Successful - StudyPad{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+        <div class="text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Upload Successful!</h3>
+            
+            <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                <dl class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <dt class="font-medium text-gray-700">File:</dt>
+                        <dd class="text-gray-900">{{ filename }}</dd>
+                    </div>
+                    <div class="flex justify-between">
+                        <dt class="font-medium text-gray-700">Category:</dt>
+                        <dd class="text-gray-900">{{ category|title }}</dd>
+                    </div>
+                    <div class="flex justify-between">
+                        <dt class="font-medium text-gray-700">Size:</dt>
+                        <dd class="text-gray-900">{{ file_size|filesizeformat }}</dd>
+                    </div>
+                    <div class="flex justify-between">
+                        <dt class="font-medium text-gray-700">Saved to:</dt>
+                        <dd class="text-gray-900 text-xs">{{ file_path }}</dd>
+                    </div>
+                </dl>
+            </div>
+            
+            <div class="flex justify-center space-x-3">
+                <a href="{% url 'post_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Back to Notes
+                </a>
+                <a href="{% url 'upload_file' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Upload Another
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
