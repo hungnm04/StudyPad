@@ -7,23 +7,27 @@ on:
     branches: [ "main", "devsecops-pipeline" ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Checkout code
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # 2. Set up Python
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
+    # 3. Install dependencies
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Django tests
+    # 4. Run tests
+    - name: Run tests
       working-directory: ./noteApp
       run: python manage.py test
