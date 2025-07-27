@@ -1,0 +1,33 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ "main", "devsecops-pipeline" ]
+  pull_request:
+    branches: [ "main", "devsecops-pipeline" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Lấy mã nguồn
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Cài đặt Python (chỉ một phiên bản)
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    # 3. Cài đặt thư viện
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 4. Chạy test cơ bản
+    - name: Run tests
+      run: |
+        python manage.py test
