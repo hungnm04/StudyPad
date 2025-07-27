@@ -27,3 +27,11 @@ jobs:
     - name: Run tests
       working-directory: ./noteApp
       run: python manage.py test
+      
+    - name: Scan code for vulnerabilities with Semgrep (SAST)
+      uses: semgrep/semgrep-action@v2
+      with:
+        config: >-
+          p/ci
+          p/django
+          p/python
