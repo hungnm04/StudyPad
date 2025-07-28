@@ -50,6 +50,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Install dependencies
+        run: pip install -r noteApp/requirements.txt
 
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python@master
