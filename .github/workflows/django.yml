@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main", "development-pipeline", "feature/*" ]  # ADD feature branches for SonarCloud
+    branches: [ "main", "development-pipeline", "feature/*" ]
   pull_request:
     branches: [ "main", "development-pipeline" ]
 
@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # SonarCloud needs full git history
+        fetch-depth: 0  
     
     - name: Set up Python 3.12
-      uses: actions/setup-python@v5  # v5 for better Python 3.12 support
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
     
@@ -65,22 +65,24 @@ jobs:
           -Dsonar.test.exclusions=**/migrations/**,**/venv/**
     
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4  
       with:
         file: ./noteApp/coverage.xml
         directory: ./noteApp/
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}  
     
     - name: Upload coverage artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4  
       if: always()
       with:
         name: coverage-report-python312
         path: |
           noteApp/coverage.xml
           noteApp/htmlcov/
+        retention-days: 30 
     
     - name: Check for missing migrations
       working-directory: ./noteApp
