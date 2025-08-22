@@ -49,8 +49,8 @@ jobs:
         coverage xml -o coverage.xml
         coverage html -d htmlcov/
     
-    - name: SonarCloud Scan
-      uses: sonarqube-scan-action@v5.0.0  
+    - name: Official SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v5.3.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -61,7 +61,7 @@ jobs:
           -Dsonar.python.coverage.reportPaths=noteApp/coverage.xml
           -Dsonar.sources=noteApp/api,noteApp/posts,noteApp/noteApp
           -Dsonar.tests=noteApp/api/tests.py,noteApp/posts/tests.py
-          -Dsonar.exclusions=**/migrations/**,**/venv/**,**/htmlcov/**,**/__pycache__/**,**/tests.py,**/manage.py,**/settings.py,**/wsgi.py,**/asgi.py
+          -Dsonar.exclusions=**/migrations/**,**/venv/**,**/htmlcov/**,**/__pycache__/**,**/manage.py,**/settings.py,**/wsgi.py,**/asgi.py
           -Dsonar.test.exclusions=**/migrations/**,**/venv/**
           -Dsonar.python.version=3.12
     
