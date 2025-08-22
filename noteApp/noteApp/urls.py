@@ -24,5 +24,6 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('accounts/', include('django.contrib.auth.urls')), 
     path('accounts/signup/', views.signup, name='signup'),
+    path('api/', include('api.urls')),  # API URLs
 ]
 

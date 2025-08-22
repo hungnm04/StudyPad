@@ -146,6 +146,7 @@ Thumbs.db
 # Project specific
 media/uploads/
 static/
+screenshots/
 secret_key.txt
 *.bak
 *.tmp
@@ -169,3 +170,10 @@ EXPLOITATION_GUIDE.md
 CHANGELOG.md
 NOTES.md
 TODO.md
+
+# Environment & Secrets
+.env
+.env.local
+.env.production
+.env.staging
+*.env

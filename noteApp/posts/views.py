@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.utils import timezone
 import os
 import json
+import re
 
 # Import the Post model
 from .models import Post
@@ -48,10 +49,9 @@ def post_create(request):
 # 4. Edit a note functionality
 @login_required
 def post_edit(request, post_id):
-    # IDOR VULNERABILITY: No authorization check!
-    post = get_object_or_404(Post, id=post_id)
-    # if post.author != request.user:
-    #     return HttpResponse("You don't have permission to edit this post")
+    # FIXED: Authorization check to prevent IDOR
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
@@ -83,8 +83,7 @@ def export_notes(request):
     if request.method == 'POST':
         export_format = request.POST.get('export_format', 'txt')
         custom_template = request.POST.get('custom_template', '')
-        
-        # Get user's notes
+          # Get user's notes
         posts = Post.objects.filter(author=request.user)
         
         if export_format == 'txt':
@@ -110,23 +109,20 @@ def export_notes(request):
             response_content = json.dumps(posts_data, indent=2)
             
         elif export_format == 'custom':
-            # VULNERABILITY: SSTI
-            # from string import Template
-            from jinja2 import Template # Use Jinja2 for custom templates                                   
+            from string import Template
             if not custom_template:
-                custom_template = "Title: {{ post.title }}\nContent: {{ post.content }}\n---\n"
+                custom_template = "Title: $title\nContent: $content\nCreated: $created_at\n---\n"
             
             output = []
             for post in posts:
                 try:
                     template = Template(custom_template)
-                    # formatted_line = template.safe_substitute(
-                    #     title=post.title,
-                    #     content=post.content,
-                    #     id=post.id,
-                    #     created_at=post.created_at.strftime('%Y-%m-%d')
-                    # )
-                    formatted_line = template.render(post=post)
+                    formatted_line = template.safe_substitute(
+                        title=post.title,
+                        content=post.content,
+                        id=post.id,
+                        created_at=post.created_at.strftime('%Y-%m-%d')
+                    )
                     output.append(formatted_line)
                     
                 except Exception as e:
@@ -248,14 +244,10 @@ def search_posts(request):
     error_message = None
     
     if query:
-        # SQL INJECTION VULNERABILITY: Using f-string directly
         try:
             with connection.cursor() as cursor:
-                # FIX : Use parameterized query to prevent SQL injection
-                # sql = "SELECT id, title, content, author_id FROM posts_post WHERE title LIKE %s AND author_id = %s"
-                # cursor.execute(sql, [f'%{query}%', request.user.id])
-                sql = f"SELECT id, title, content, author_id FROM posts_post WHERE title LIKE '%{query}%' AND author_id = {request.user.id}"
-                cursor.execute(sql)
+                sql = "SELECT id, title, content, author_id FROM posts_post WHERE title LIKE %s AND author_id = %s"
+                cursor.execute(sql, [f'%{query}%', request.user.id])
                 results = cursor.fetchall()
                 
                 # Convert results to objects
@@ -278,63 +270,33 @@ def search_posts(request):
     })
  
 # 9. Backup functionality
+@login_required
 def backup_files(request):
-    # VULNERABILITY: Information Disclosure - No authorization check!
-    # if not request.user.is_superuser:
-    #     return HttpResponse("Unauthorized", status=401)
+    # FIXED: Add proper authorization check
+    if not request.user.is_superuser:
+        return HttpResponse("Unauthorized", status=401)
     
-    # Get ALL user data (vulnerability)
-    all_posts = Post.objects.all()
-    all_users = User.objects.all()
+    # Only get current user's data (no longer a vulnerability)
+    user_posts = Post.objects.filter(author=request.user)
     
     backup_info = {
-        'message': 'StudyPad Backup Directory - CONFIDENTIAL',
-        'warning': 'This directory should not be publicly accessible!',
+        'message': 'StudyPad Personal Backup',
         'timestamp': timezone.now().isoformat(),
-        'total_users': all_users.count(),
-        'total_notes': all_posts.count(),
-        'files': [
-            {
-                'name': 'database_backup_2025-07-22.sql',
-                'size': '2.3MB',
-                'contains': 'Full database dump with user passwords',
-                'risk_level': 'CRITICAL'
-            },
-            {
-                'name': 'user_data_export.json',
-                'size': '847KB', 
-                'contains': 'All user personal data and notes',
-                'risk_level': 'HIGH'
-            },
-            {
-                'name': 'admin_credentials.txt',
-                'size': '1KB',
-                'contains': 'Admin login credentials (admin:StudyPad2025!)',
-                'risk_level': 'CRITICAL'
-            }
-        ],
-        'exposed_users': [
-            {
-                'username': user.username,
-                'email': user.email or 'no-email@example.com',
-                'is_staff': user.is_staff,
-                'note_count': all_posts.filter(author=user).count()
-            } for user in all_users[:5]  # Show first 5 users
-        ],
-        'sample_notes': [
+        'user': request.user.username,
+        'total_notes': user_posts.count(),
+        'notes': [
             {
                 'id': post.id,
                 'title': post.title,
-                'author': post.author.username,
-                'preview': post.content[:100] + '...' if len(post.content) > 100 else post.content
-            } for post in all_posts[:3]  # Show first 3 notes
-        ],
-        'admin_note': 'TODO: Move this directory outside web root and add proper authentication!'
+                'preview': post.content[:100] + '...' if len(post.content) > 100 else post.content,
+                'created_at': post.created_at.isoformat()
+            } for post in user_posts
+        ]
     }
     
     return JsonResponse(backup_info, json_dumps_params={'indent': 2})
 
-# 9. File upload functionality
+# 10. File upload functionality
 @login_required
 def upload_file(request):
     if request.method == 'POST':
@@ -343,41 +305,32 @@ def upload_file(request):
         subfolder = request.POST.get('subfolder', '').strip()
         
         if uploaded_file:
-            # SIMPLIFIED: Use shallow directory structure for easier demo
-            base_dir = 'uploads'  # Just uploads, not deep nested
+            base_dir = 'uploads' 
             
-            # VULNERABILITY: Path traversal in subfolder parameter!
+            import re
             if subfolder:
+                subfolder = re.sub(r'[<>:"/\\|?*]', '', subfolder)  # Remove dangerous chars
+                subfolder = re.sub(r'\.\.', '', subfolder)          # Remove ..
+                subfolder = subfolder.replace('/', '').replace('\\', '')  # Remove slashes
+                subfolder = subfolder[:50]  # Limit length
+                
+                # Only allow alphanumeric, dash, underscore
+                subfolder = re.sub(r'[^a-zA-Z0-9\-_]', '', subfolder)
+                
+                # If nothing valid remains, use default
+                if not subfolder:
+                    subfolder = 'safe_uploads'
+                
                 upload_path = f'{base_dir}/{category}/{subfolder}'
             else:
                 upload_path = f'{base_dir}/{category}'
             
-            # FIX: Sanitize subfolder to prevent path traversal
-            # import re
-            # if subfolder:
-            #     # Remove dangerous characters and path traversal attempts
-            #     subfolder = re.sub(r'[<>:"/\\|?*]', '', subfolder)  # Remove dangerous chars
-            #     subfolder = re.sub(r'\.\.', '', subfolder)          # Remove ..
-            #     subfolder = subfolder.replace('/', '').replace('\\', '')  # Remove slashes
-            #     subfolder = subfolder[:50]  # Limit length
-                
-            #     # Only allow alphanumeric, dash, underscore
-            #     subfolder = re.sub(r'[^a-zA-Z0-9\-_]', '', subfolder)
-                
-            #     # If nothing valid remains, use default
-            #     if not subfolder:
-            #         subfolder = 'safe_uploads'
-                
-            #     upload_path = f'{base_dir}/{category}/{subfolder}'
-            # else:
-            #     upload_path = f'{base_dir}/{category}'
-            
-            # # Validate final path
-            # allowed_base = os.path.abspath('media/uploads')
-            # resolved_path = os.path.abspath(os.path.join('media', upload_path))
-            # if not resolved_path.startswith(allowed_base):
-            #     messages.error(request, 'Invalid upload path detected.')
-            #     return render(request, 'posts/upload_file.html')
+            # Validate final path
+            allowed_base = os.path.abspath('media/uploads')
+            resolved_path = os.path.abspath(os.path.join('media', upload_path))
+            if not resolved_path.startswith(allowed_base):
+                messages.error(request, 'Invalid upload path detected.')
+                return render(request, 'posts/upload_file.html')
             
             try:
                 # Create full path (relative to media directory)
@@ -409,21 +362,3 @@ def upload_file(request):
             messages.error(request, 'Please select a file to upload.')
     
     return render(request, 'posts/upload_file.html')
-
-# Dashboard view with statistics
-@login_required
-def dashboard(request):
-    """Enhanced dashboard with user statistics"""
-    user_posts = Post.objects.filter(author=request.user)
-    
-    stats = {
-        'total_notes': user_posts.count(),
-        'notes_this_month': user_posts.filter(
-            created_at__month=timezone.now().month,
-            created_at__year=timezone.now().year
-        ).count(),
-        'latest_note': user_posts.order_by('-created_at').first(),
-        'popular_note': user_posts.order_by('-id').first(),  # Simplified popularity
-    }
-    
-    return render(request, 'posts/dashboard.html', {'stats': stats})

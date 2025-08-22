@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main", "devsecops-pipeline" ]
+    branches: [ "main", "development-pipeline", "feature/*" ]
   pull_request:
-    branches: [ "main", "devsecops-pipeline" ]
+    branches: [ "main", "development-pipeline" ]
 
 jobs:
   build:
@@ -24,19 +24,34 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r noteApp/requirements.txt
 
-    - name: Run Django tests
+    - name: Run Django tests with coverage
       working-directory: ./noteApp
-      run: python manage.py test
+      run: |
+        coverage run --rcfile=.coveragerc manage.py test posts api
+        coverage xml -o coverage.xml
+
+    - name: Upload coverage to SonarCloud
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: noteApp/coverage.xml
 
   sast-scan:
     name: SAST Scan (SonarCloud)
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: ./noteApp
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
