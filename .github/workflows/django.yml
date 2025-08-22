@@ -39,6 +39,8 @@ jobs:
   sast-scan:
     name: SAST Scan (SonarCloud)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: build
 
     steps:
