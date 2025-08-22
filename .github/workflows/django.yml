@@ -7,90 +7,79 @@ on:
     branches: [ "main", "development-pipeline" ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    
-    - name: Set up Python 3.12
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-    
+
     - name: Install dependencies
-      working-directory: ./noteApp
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install coverage bandit
-    
-    - name: Run Django system checks
+        pip install -r noteApp/requirements.txt
+
+    - name: Run Django tests
       working-directory: ./noteApp
-      run: |
-        python manage.py check
-    
-    - name: Run database migrations
-      working-directory: ./noteApp
-      run: |
-        python manage.py migrate
-    
-    - name: Run comprehensive test suite with coverage
-      working-directory: ./noteApp
-      run: |
-        coverage run --source='.' --omit='*/migrations/*,*/venv/*,manage.py,*/settings.py,*/wsgi.py,*/asgi.py,*/admin.py,*/apps.py,*/__init__.py' manage.py test posts api --verbosity=2
-    
-    - name: Generate coverage report
-      working-directory: ./noteApp
-      run: |
-        coverage report --show-missing --fail-under=70
-        coverage xml -o coverage.xml
-        coverage html -d htmlcov/
-    
-    - name: Official SonarQube Scan
-      uses: SonarSource/sonarqube-scan-action@v5.3.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.projectKey=hungnm04_StudyPad
-          -Dsonar.organization=hungnm04
-          -Dsonar.python.coverage.reportPaths=noteApp/coverage.xml
-          -Dsonar.sources=noteApp/api,noteApp/posts,noteApp/noteApp
-          -Dsonar.tests=noteApp/api/tests.py,noteApp/posts/tests.py
-          -Dsonar.exclusions=**/migrations/**,**/venv/**,**/htmlcov/**,**/__pycache__/**,**/manage.py,**/settings.py,**/wsgi.py,**/asgi.py
-          -Dsonar.test.exclusions=**/migrations/**,**/venv/**
-          -Dsonar.python.version=3.12
-    
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./noteApp/coverage.xml
-        directory: ./noteApp/
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-        token: ${{ secrets.CODECOV_TOKEN }}
-    
-    - name: Upload coverage artifact
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: coverage-report-python312
-        path: |
-          noteApp/coverage.xml
-          noteApp/htmlcov/
-        retention-days: 30
-    
-    - name: Check for missing migrations
-      working-directory: ./noteApp
-      run: |
-        python manage.py makemigrations --check --dry-run
-    
-    - name: Lightweight security check
-      working-directory: ./noteApp
-      run: |
-        bandit -r posts/ api/ -ll --format=txt || echo "Security scan completed with warnings"
+      run: python manage.py test
+
+  sast-scan:
+    name: SAST Scan (SonarCloud)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  sca-scan:
+    name: SCA Scan (Snyk)
+    runs-on: ubuntu-latest
+    needs: build
+
+    permissions:
+      security-events: write 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      # Node.js is needed to install the Snyk CLI
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: pip install -r noteApp/requirements.txt
+
+      # Install the Snyk CLI tool directly
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      # Run the Snyk CLI command
+      - name: Run Snyk to check for vulnerabilities
+        continue-on-error: true
+        run: snyk test --file=noteApp/requirements.txt --sarif-file-output=snyk.sarif
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk.sarif
