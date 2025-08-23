@@ -1,14 +1,18 @@
 name: Docker Security Scan
 
 on:
-  push:  # Run on any push to any branch
+  push:
+    branches: [ "main", "feature/dockerize-application" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
+  django-tests:
+    uses: ./.github/workflows/django.yml
+
   trivy-scan:
     runs-on: ubuntu-latest
+    needs: django-tests  
     permissions:
       contents: read
       security-events: write
