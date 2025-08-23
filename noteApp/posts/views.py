@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
 from django.utils import timezone
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_protect
 import os
 import json
 import re
@@ -362,3 +364,11 @@ def upload_file(request):
             messages.error(request, 'Please select a file to upload.')
     
     return render(request, 'posts/upload_file.html')
+
+@login_required
+@require_POST
+@csrf_protect
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('homepage')

@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080" 
+    volumes:
+      - ./noteApp:/app
+    environment:
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=noteApp.settings
+    restart: unless-stopped
+    user: "1000:1000" 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
