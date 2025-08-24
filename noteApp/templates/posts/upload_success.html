@@ -3,42 +3,48 @@
 {% block title %}Upload Successful - StudyPad{% endblock %}
 
 {% block content %}
-<div class="max-w-lg mx-auto">
-    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+<div class="max-w-lg mx-auto mt-8 px-4 sm:px-0">
+    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-300">
         <div class="text-center">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-green-50 to-green-100 mb-6 ring-8 ring-green-50">
+                <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Upload Successful!</h3>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Upload Successful!</h3>
             
-            <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-                <dl class="space-y-2 text-sm">
-                    <div class="flex justify-between">
+            <div class="bg-gray-50 rounded-lg p-5 mb-6 text-left">
+                <dl class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center">
                         <dt class="font-medium text-gray-700">File:</dt>
-                        <dd class="text-gray-900">{{ filename }}</dd>
+                        <dd class="text-gray-900 font-medium">{{ filename }}</dd>
                     </div>
-                    <div class="flex justify-between">
+                    <div class="flex justify-between items-center">
                         <dt class="font-medium text-gray-700">Category:</dt>
                         <dd class="text-gray-900">{{ category|title }}</dd>
                     </div>
-                    <div class="flex justify-between">
+                    <div class="flex justify-between items-center">
                         <dt class="font-medium text-gray-700">Size:</dt>
                         <dd class="text-gray-900">{{ file_size|filesizeformat }}</dd>
                     </div>
-                    <div class="flex justify-between">
+                    <div class="flex justify-between items-center">
                         <dt class="font-medium text-gray-700">Saved to:</dt>
-                        <dd class="text-gray-900 text-xs">{{ file_path }}</dd>
+                        <dd class="text-gray-900 text-xs truncate max-w-[200px]" title="{{ file_path }}">{{ file_path }}</dd>
                     </div>
                 </dl>
             </div>
             
-            <div class="flex justify-center space-x-3">
-                <a href="{% url 'post_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                <a href="{% url 'post_list' %}" class="inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                    </svg>
                     Back to Notes
                 </a>
-                <a href="{% url 'upload_file' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <a href="{% url 'upload_file' %}" class="inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                    </svg>
                     Upload Another
                 </a>
             </div>
