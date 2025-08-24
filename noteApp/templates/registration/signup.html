@@ -13,14 +13,14 @@
         <div class="mx-auto w-full max-w-sm lg:w-96">
             <div>
                 <a href="{% url 'homepage' %}" class="inline-flex items-center">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600">
                         <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c0 .621-.504 1.125-1.125 1.125V11.25a9 9 0 0 0-9-9Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621-.504 1.125-1.125 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                         </svg>
                     </div>
                     <span class="ml-3 text-xl font-semibold text-gray-900">StudyPad</span>
                 </a>
-                <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
+                <h2 class="mt-8 text-3xl font-bold leading-9 tracking-tight text-gray-900">
                     Create your account
                 </h2>
                 <p class="mt-2 text-sm leading-6 text-gray-500">
@@ -31,10 +31,10 @@
                 </p>
             </div>
 
-            <div class="mt-10">
+            <div class="mt-8">
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="rounded-md bg-green-50 p-4 mb-6">
+                        <div class="rounded-lg bg-green-50 p-4 mb-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -50,7 +50,7 @@
                 {% endif %}
 
                 {% if form.errors %}
-                    <div class="rounded-md bg-red-50 p-4 mb-6">
+                    <div class="rounded-lg bg-red-50 p-4 mb-4">
                         <div class="flex">
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -73,7 +73,7 @@
                     </div>
                 {% endif %}
 
-                <form method="post" class="space-y-6">
+                <form method="post" class="space-y-5">
                     {% csrf_token %}
                     <div>
                         <label for="id_username" class="block text-sm font-medium leading-6 text-gray-900">
@@ -86,9 +86,10 @@
                                 type="text"
                                 autocomplete="username"
                                 required
-                                class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                class="block w-full rounded-lg border-0 py-2.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 value="{{ form.username.value|default:'' }}"
-                            />                        </div>
+                            />
+                        </div>
                         {% if form.username.help_text %}
                             <p class="mt-2 text-xs text-gray-500">{{ form.username.help_text|escape }}</p>
                         {% endif %}
@@ -105,8 +106,9 @@
                                 type="password"
                                 autocomplete="new-password"
                                 required
-                                class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            />                        </div>
+                                class="block w-full rounded-lg border-0 py-2.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                        </div>
                         {% if form.password1.help_text %}
                             <p class="mt-2 text-xs text-gray-500">{{ form.password1.help_text|escape }}</p>
                         {% endif %}
@@ -123,30 +125,38 @@
                                 type="password"
                                 autocomplete="new-password"
                                 required
-                                class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                class="block w-full rounded-lg border-0 py-2.5 px-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
 
-                    <div>
-                        {% include "components/button.html" with type="submit" text="Sign in" classes="w-full bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" only %}
-                    </div>                </form>
+                    <div class="pt-2">
+                        <button
+                            type="submit"
+                            class="flex w-full justify-center rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-2.5 text-sm font-semibold leading-6 text-white shadow-sm hover:from-indigo-700 hover:to-purple-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-200"
+                        >
+                            Create Account
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
     
-    <!-- Right side - Branding -->
+    <!-- Right side - Enhanced Branding -->
     <div class="relative hidden w-0 flex-1 lg:block">
-        <div class="absolute inset-0 h-full w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100">
-            <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div class="absolute inset-0 h-full w-full bg-gradient-to-br from-indigo-50 via-white to-purple-100">
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%237C3AED" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
         </div>
         <div class="absolute inset-0 flex items-center justify-center">
             <div class="max-w-md text-center">
-                <svg class="mx-auto h-24 w-24 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 18.75h-3M8.25 6.75h2.25M12 18.75v1.5A2.25 2.25 0 0 0 14.25 22.5h3.75a2.25 2.25 0 0 0 2.25-2.25V8.25A2.25 2.25 0 0 0 18 6h-1.5a3.375 3.375 0 0 0-3.375 3.375v1.5" />
-                </svg>
-                <h3 class="mt-6 text-lg font-semibold text-gray-900">Start organizing today</h3>
-                <p class="mt-2 text-sm text-gray-600">
+                <div class="mx-auto h-20 w-20 flex items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-6 shadow-lg">
+                    <svg class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 18.75h-3M8.25 6.75h2.25M12 18.75v1.5A2.25 2.25 0 0 0 14.25 22.5h3.75a2.25 2.25 0 0 0 2.25-2.25V8.25A2.25 2.25 0 0 0 18 6h-1.5a3.375 3.375 0 0 0-3.375 3.375v1.5" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Start organizing today</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
                     Join thousands of students who trust StudyPad to capture and organize their study notes.
                 </p>
             </div>
