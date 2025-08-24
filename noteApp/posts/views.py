@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -39,6 +39,7 @@ def post_create(request):
         content = request.POST.get('content')
         
         if title and content:
+            # Create post without the updated_at field
             post = Post.objects.create(
                 title=title,
                 content=content,
@@ -61,6 +62,8 @@ def post_edit(request, post_id):
         if title and content:
             post.title = title
             post.content = content
+            # Let Django handle the updated_at field if it exists
+            # The save() method should update it automatically
             post.save()
             return redirect('post_list')
     

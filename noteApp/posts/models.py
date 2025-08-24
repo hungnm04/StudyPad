@@ -11,7 +11,7 @@ class Post(models.Model):
     content = models.TextField(
         validators=[MaxLengthValidator(10000, "Content must be less than 10,000 characters.")]
     )
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -32,10 +32,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()  
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return self.title
-    
-    def get_content_preview(self):
-        """Return first 100 characters of content for previews."""
-        return self.content[:100] + '...' if len(self.content) > 100 else self.content
+

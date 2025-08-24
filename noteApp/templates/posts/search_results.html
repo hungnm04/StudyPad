@@ -3,15 +3,15 @@
 {% block title %}Search Results - StudyPad{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:tracking-tight">
             Search Results
         </h1>
         {% if query %}
             <p class="mt-2 text-sm text-gray-600">
-                Showing results for: <strong>"{{ query }}"</strong>
+                Showing results for: <span class="font-medium text-indigo-600">"{{ query }}"</span>
             </p>
         {% endif %}
     </div>
@@ -20,15 +20,20 @@
     <div class="mb-6">
         <form method="get" action="{% url 'search_posts' %}" class="flex items-center space-x-2 max-w-md">
             <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </div>
                 <input
                     type="text"
                     name="q"
                     value="{{ query }}"
                     placeholder="Search notes..."
-                    class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    class="block w-full rounded-lg border-0 py-2.5 pl-10 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 transition-all duration-200"
                 />
-                <button type="submit" class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <button type="submit" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                     </svg>
                 </button>
@@ -39,20 +44,24 @@
 {% if posts %}
     <div class="space-y-4">
         {% for post in posts %}
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-lg p-6 hover:shadow-md transition-all duration-200 group">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                            {{ post.title }}
-                        </h3>
-                        <p class="text-gray-600 text-sm line-clamp-3 mb-3">
-                            {{ post.content|truncatewords:30 }}
-                        </p>
-                        <!-- Removed the created_at line -->
+                        <a href="{% url 'post_detail' post.id %}" class="block focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
+                                {{ post.title }}
+                            </h3>
+                            <p class="text-gray-600 text-sm line-clamp-3 mb-3">
+                                {{ post.content|truncatewords:30 }}
+                            </p>
+                        </a>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 flex flex-col items-end">
                         <a href="{% url 'post_edit' post.id %}" 
-                           class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                           class="text-indigo-600 hover:text-indigo-800 text-sm font-medium inline-flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                            </svg>
                             Edit
                         </a>
                     </div>
@@ -61,36 +70,39 @@
         {% endfor %}
     </div>
 {% elif query %}
-    <!-- No results section stays the same -->
-    <div class="text-center py-12">
-        <div class="mx-auto h-12 w-12 text-gray-400">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+    <!-- No results section with improved design -->
+    <div class="text-center py-16 px-6">
+        <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-gray-100 mb-4">
+            <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
         </div>
         <h3 class="mt-4 text-lg font-semibold text-gray-900">No results found</h3>
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-2 text-sm text-gray-500 max-w-md mx-auto">
             Try searching with different keywords or check your spelling.
         </p>
     </div>
 {% else %}
-    <!-- No search query -->
-    <div class="text-center py-12">
-        <div class="mx-auto h-12 w-12 text-gray-400">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+    <!-- No search query with improved design -->
+    <div class="text-center py-16 px-6">
+        <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-indigo-50 mb-4">
+            <svg class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
         </div>
         <h3 class="mt-4 text-lg font-semibold text-gray-900">Search your notes</h3>
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-2 text-sm text-gray-500 max-w-md mx-auto">
             Enter a search term above to find your notes.
         </p>
     </div>
 {% endif %}
 
     <div class="mt-8">
-        <a href="{% url 'post_list' %}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-700">
-            ← Back to all notes
+        <a href="{% url 'post_list' %}" class="inline-flex items-center text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+            </svg>
+            Back to all notes
         </a>
     </div>
 </div>

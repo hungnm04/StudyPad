@@ -1,217 +1,184 @@
-<!DOCTYPE html>
-<html lang="en" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if user.is_authenticated %}Welcome back{% else %}StudyPad{% endif %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="h-full bg-white">
-    <div class="min-h-full">
-        <!-- Navigation -->
-        <header class="absolute inset-x-0 top-0 z-50">
-            <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
-                <div class="flex lg:flex-1">
-                    <a href="{% url 'homepage' %}" class="-m-1.5 p-1.5">
-                        <span class="sr-only">StudyPad</span>
-                        <div class="flex items-center">
-                            <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9z" />
-                            </svg>
-                            <span class="ml-2 text-xl font-semibold text-gray-900">StudyPad</span>
-                        </div>
-                    </a>
-                </div>
+{% extends "base.html" %}
+{% load static %}
 
+{% block title %}StudyPad - The Smartest Way to Take Notes{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <!-- ========== HERO SECTION ========== -->
+    <div class="relative overflow-hidden bg-gradient-to-b from-indigo-100/20 pt-14">
+        <div class="absolute inset-y-0 right-1/2 -z-10 -mr-96 w-[200%] origin-top-right skew-x-[-30deg] bg-white shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 sm:-mr-80 lg:-mr-96" aria-hidden="true"></div>
+        <div class="mx-auto max-w-7xl px-6 py-32 sm:py-40 lg:px-8">
+            <div class="mx-auto max-w-2xl lg:mx-0 lg:grid lg:max-w-none lg:grid-cols-2 lg:gap-x-16 lg:gap-y-6 xl:grid-cols-1 xl:grid-rows-1 xl:gap-x-8">
                 {% if user.is_authenticated %}
-                    <!-- Logged in navigation -->
-                    <div class="hidden lg:flex lg:gap-x-12">
-                        <a href="{% url 'post_list' %}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600">My Notes</a>
-                    </div>
-                    
-                    <div class="flex lg:flex-1 lg:justify-end items-center">
-                        <div class="relative">
-                            <button type="button" class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900" id="user-menu-button" onclick="toggleDropdown()">
-                                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                                    <span class="text-sm font-medium text-indigo-600">{{ user.username|first|upper }}</span>
-                                </div>
-                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                              <!-- Dropdown menu -->
-                            <div id="user-dropdown" class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden">
-                                <div class="py-1">
-                                    <div class="px-4 py-3 text-sm text-gray-500 border-b">
-                                        <div class="font-medium">{{ user.username }}</div>
-                                        <div class="truncate">{{ user.email|default:"No email" }}</div>
-                                    </div>
-                                    <a href="{% url 'post_list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                        </svg>
-                                        My Notes
-                                    </a>
-                                    <a href="{% url 'export_notes' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                        </svg>
-                                        Export Notes
-                                    </a>
-                                    <a href="{% url 'upload_file' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                        </svg>
-                                        Upload Files
-                                    </a>
-                                    <hr class="my-1">
-                                    <form method="post" action="{% url 'logout' %}" class="block">
-                                        {% csrf_token %}
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>                {% else %}
-                    <!-- Not logged in navigation -->
-                    <div class="flex lg:flex-1 lg:justify-end items-center space-x-4">
-                        <a href="{% url 'login' %}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600">
-                            Log in
-                        </a>
-                        <a href="{% url 'signup' %}" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Sign up
-                        </a>
-                    </div>
-                {% endif %}
-            </nav>
-        </header>
-
-        <!-- Hero section -->
-        <div class="relative isolate px-6 pt-14 lg:px-8">
-            <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-                <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
-            </div>
-            
-            <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">                {% if user.is_authenticated %}
-                    <!-- Logged in hero -->
-                    <div class="text-center">
-                        <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                            Welcome back, {{ user.username }}
-                        </h1>
-                        <p class="mt-6 text-lg leading-8 text-gray-600">
-                            Ready to capture your thoughts? Your notes are waiting for you.
+                    <!-- Logged-In Hero -->
+                    <h1 class="max-w-2xl text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:col-span-2 xl:col-auto">
+                        Welcome back, {{ user.username }}
+                    </h1>
+                    <div class="mt-6 max-w-xl lg:mt-0 xl:col-end-1 xl:row-start-1">
+                        <p class="text-lg leading-8 text-gray-600">
+                            Ready to capture your thoughts? Your notes are waiting for you. Dive back in and continue where you left off.
                         </p>
-                        <div class="mt-10 flex items-center justify-center gap-x-6">
+                        <div class="mt-10 flex items-center gap-x-6">
                             <a href="{% url 'post_list' %}" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                View my notes
+                                Go to My Notes
                             </a>
-                            <a href="{% url 'post_create' %}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600">
-                                Create new note <span aria-hidden="true">→</span>
+                            <a href="{% url 'post_create' %}" class="text-sm font-semibold leading-6 text-gray-900">
+                                Create a new note <span aria-hidden="true">→</span>
                             </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Quick Actions Dashboard -->
-                    <div class="mt-20">
-                        <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                            <div class="mx-auto max-w-2xl lg:text-center">
-                                <h2 class="text-base font-semibold leading-7 text-indigo-600">Quick Actions</h2>
-                                <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                                    Everything you need to manage your notes
-                                </p>
-                            </div>
-                            <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-                                <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-                                    <div class="relative pl-16">
-                                        <dt class="text-base font-semibold leading-7 text-gray-900">
-                                            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                                </svg>
-                                            </div>
-                                            <a href="{% url 'post_create' %}" class="hover:text-indigo-600">Create New Note</a>
-                                        </dt>
-                                        <dd class="mt-2 text-base leading-7 text-gray-600">Start writing your thoughts with our clean, distraction-free editor.</dd>
-                                    </div>
-                                    <div class="relative pl-16">
-                                        <dt class="text-base font-semibold leading-7 text-gray-900">
-                                            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                                                </svg>
-                                            </div>
-                                            <a href="{% url 'search_posts' %}" class="hover:text-indigo-600">Search Notes</a>
-                                        </dt>
-                                        <dd class="mt-2 text-base leading-7 text-gray-600">Find exactly what you're looking for with powerful search capabilities.</dd>
-                                    </div>
-                                    <div class="relative pl-16">
-                                        <dt class="text-base font-semibold leading-7 text-gray-900">
-                                            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                                </svg>
-                                            </div>
-                                            <a href="{% url 'export_notes' %}" class="hover:text-indigo-600">Export & Backup</a>
-                                        </dt>
-                                        <dd class="mt-2 text-base leading-7 text-gray-600">Download your notes in multiple formats or create secure backups.</dd>
-                                    </div>
-                                    <div class="relative pl-16">
-                                        <dt class="text-base font-semibold leading-7 text-gray-900">
-                                            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                                                </svg>
-                                            </div>
-                                            <a href="{% url 'upload_file' %}" class="hover:text-indigo-600">Upload Files</a>
-                                        </dt>
-                                        <dd class="mt-2 text-base leading-7 text-gray-600">Attach images, documents, and other files to enrich your notes.</dd>
-                                    </div>
-                                </dl>
-                            </div>
                         </div>
                     </div>
                 {% else %}
-                    <!-- Not logged in hero -->
-                    <div class="text-center">
-                        <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                            Note-taking
-                            <span class="text-indigo-600">made simple</span>
-                        </h1>
-                        <p class="mt-6 text-lg leading-8 text-gray-600">
-                            Capture your thoughts, organize your ideas, and never lose inspiration again. The simple way to stay productive.
-                        </p>                        <div class="mt-10 flex items-center justify-center gap-x-6">
+                    <!-- Logged-Out-->
+                    <h1 class="max-w-2xl text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:col-span-2 xl:col-auto">
+                        The smartest way to <span class="text-indigo-600">organize your knowledge.</span>
+                    </h1>
+                    <div class="mt-6 max-w-xl lg:mt-0 xl:col-end-1 xl:row-start-1">
+                        <p class="text-lg leading-8 text-gray-600">
+                            StudyPad is a clean, powerful, and intelligent workspace for your notes, ideas, and projects. Capture your thoughts and access them from anywhere.
+                        </p>
+                        <div class="mt-10 flex items-center gap-x-6">
                             <a href="{% url 'signup' %}" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                Get started free
+                                Get started for free
                             </a>
-                            <a href="{% url 'login' %}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600">
-                                Sign in <span aria-hidden="true">→</span>
+                            <a href="#features" class="text-sm font-semibold leading-6 text-gray-900">
+                                Learn more <span aria-hidden="true">→</span>
                             </a>
                         </div>
                     </div>
                 {% endif %}
+                <img src="https://placehold.co/1200x800/E0E7FF/4F46E5?text=StudyPad+Dashboard" alt="App screenshot" class="mt-10 w-full max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-36">
             </div>
-            
-            <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
-                <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+        </div>
+        <div class="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white sm:h-32"></div>
+    </div>
+
+    <!-- ========== FEATURES SECTION ========== -->
+    <div id="features" class="bg-white py-24 sm:py-32">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl lg:text-center">
+                <h2 class="text-base font-semibold leading-7 text-indigo-600">Everything You Need</h2>
+                <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    A better workflow for your brain
+                </p>
+                <p class="mt-6 text-lg leading-8 text-gray-600">
+                    From simple checklists to complex project management, StudyPad is flexible enough to handle it all.
+                </p>
+            </div>
+            <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+                <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                    <!-- Feature 1 -->
+                    <div class="flex flex-col">
+                        <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                            <svg class="h-5 w-5 flex-none text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                            </svg>
+                            Rich Text Editing
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                            <p class="flex-auto">Our editor supports markdown, code blocks, images, and attachments. Format your notes exactly how you want them.</p>
+                        </dd>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="flex flex-col">
+                        <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                            <svg class="h-5 w-5 flex-none text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
+                            </svg>
+                            Powerful Organization
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                            <p class="flex-auto">Use tags, nested notebooks, and powerful search to find what you need in seconds, no matter how many notes you have.</p>
+                        </dd>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="flex flex-col">
+                        <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                            <svg class="h-5 w-5 flex-none text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582" />
+                            </svg>
+                            Sync Across Devices
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                            <p class="flex-auto">Your notes are securely synced to the cloud, available on all your devices. Never lose an idea again.</p>
+                        </dd>
+                    </div>
+                </dl>
             </div>
         </div>
     </div>
 
-    <script>
-        function toggleDropdown() {
-            const dropdown = document.getElementById('user-dropdown');
-            dropdown.classList.toggle('hidden');
-        }
+    <!-- ========== TESTIMONIALS SECTION ========== -->
+    <div id="testimonials" class="bg-gray-50 py-24 sm:py-32">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+            <div class="mx-auto max-w-xl text-center">
+                <h2 class="text-lg font-semibold leading-8 tracking-tight text-indigo-600">Testimonials</h2>
+                <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    Trusted by students and professionals worldwide
+                </p>
+            </div>
+            <div class="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                    <!-- Testimonial 1 -->
+                    <div class="rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-900/5">
+                        <blockquote class="text-gray-900">
+                            <p>"StudyPad has completely changed how I organize my research. The tagging system is a game-changer and the interface is just beautiful to use."</p>
+                        </blockquote>
+                        <figcaption class="mt-6 flex items-center gap-x-4">
+                            <img class="h-10 w-10 rounded-full bg-gray-50" src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="">
+                            <div>
+                                <div class="font-semibold">Sarah Johnson</div>
+                                <div class="text-gray-600">PhD Candidate</div>
+                            </div>
+                        </figcaption>
+                    </div>
+                    <!-- Testimonial 2 -->
+                    <div class="rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-900/5">
+                        <blockquote class="text-gray-900">
+                            <p>"As a developer, the code block support is fantastic. I've moved all my project notes and snippets into StudyPad. It's fast, reliable, and just works."</p>
+                        </blockquote>
+                        <figcaption class="mt-6 flex items-center gap-x-4">
+                            <img class="h-10 w-10 rounded-full bg-gray-50" src="https://i.pravatar.cc/150?u=a04258114e29026702d" alt="">
+                            <div>
+                                <div class="font-semibold">Michael Chen</div>
+                                <div class="text-gray-600">Software Engineer</div>
+                            </div>
+                        </figcaption>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('user-dropdown');
-            const button = document.getElementById('user-menu-button');
-            
-            if (dropdown && !dropdown.contains(event.target) && !button.contains(event.target)) {
-                dropdown.classList.add('hidden');
-            }
-        });
-    </script>
-</body>
-</html>
+    <!-- ========== FINAL CTA SECTION ========== -->
+    <div class="bg-white">
+        <div class="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+            <div class="relative isolate overflow-hidden bg-gray-900 px-6 py-24 text-center shadow-2xl rounded-3xl sm:px-16">
+                <h2 class="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                    Ready to get started?
+                </h2>
+                <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
+                    Join thousands of users who are organizing their lives and achieving their goals with StudyPad.
+                </p>
+                <div class="mt-10 flex items-center justify-center gap-x-6">
+                    <a href="{% url 'signup' %}" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                        Sign up for free
+                    </a>
+                    <a href="{% url 'login' %}" class="text-sm font-semibold leading-6 text-white">
+                        Sign in <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+                <svg viewBox="0 0 1024 1024" class="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]" aria-hidden="true">
+                    <circle cx="512" cy="512" r="512" fill="url(#827591b1-ce8c-4110-b064-7cb85a0b1217)" fill-opacity="0.7"></circle>
+                    <defs>
+                        <radialGradient id="827591b1-ce8c-4110-b064-7cb85a0b1217">
+                            <stop stop-color="#7775D6"></stop>
+                            <stop offset="1" stop-color="#E935C1"></stop>
+                        </radialGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
