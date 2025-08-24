@@ -178,6 +178,48 @@ MEDIA_ROOT = BASE_DIR / 'media'           # Where uploaded files are stored
 # AUTHENTICATION URLS
 # =============================================================================
 
+# =============================================================================
+# SECURITY SETTINGS - DOCKER/DEVELOPMENT FRIENDLY
+# =============================================================================
+
+# CSRF Protection - prevents cross-site request forgery
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8080',   # Docker container
+    'http://127.0.0.1:8080',  # Docker container
+    'http://0.0.0.0:8080',    # Docker container
+    'http://localhost:8000',  # Local development
+    'http://127.0.0.1:8000',  # Local development
+]
+
+# Cookie Settings for Development (less strict for Docker)
+CSRF_COOKIE_SECURE = False      # Only send CSRF cookie over HTTPS (False for development)
+SESSION_COOKIE_SECURE = False   # Only send session cookie over HTTPS (False for development)
+CSRF_COOKIE_HTTPONLY = False    # Allow JavaScript access to CSRF token (needed for AJAX)
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie (security)
+
+# Cookie Domain Settings
+CSRF_COOKIE_DOMAIN = None    # Use default domain
+SESSION_COOKIE_DOMAIN = None # Use default domain
+
+# Basic Security Headers
+SECURE_BROWSER_XSS_FILTER = True    # Enable XSS filtering in browsers
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+X_FRAME_OPTIONS = 'DENY'            # Prevent page from being embedded in frames
+
+# =============================================================================
+# INTERNATIONALIZATION
+# =============================================================================
+
+LANGUAGE_CODE = 'en-us'  # Default language
+TIME_ZONE = 'UTC'        # Default timezone
+USE_I18N = True          # Enable internationalization
+USE_TZ = True            # Use timezone-aware datetimes
+
+# =============================================================================
+# STATIC & MEDIA FILES
+# =============================================================================
+
+
 LOGIN_URL = '/accounts/login/'      # Where to redirect if login required
 LOGIN_REDIRECT_URL = '/posts/'      # Where to go after successful login
 LOGOUT_REDIRECT_URL = '/'           # Where to go after logout

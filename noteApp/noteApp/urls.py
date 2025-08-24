@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from posts.views import logout_view
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),  # Root URL shows homepage
@@ -24,5 +25,7 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('accounts/', include('django.contrib.auth.urls')), 
     path('accounts/signup/', views.signup, name='signup'),
+    path('accounts/logout/', logout_view, name='logout'),
+    path('api/', include('api.urls')),  # API URLs
 ]
 
