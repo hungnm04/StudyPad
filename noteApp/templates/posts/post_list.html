@@ -220,6 +220,14 @@
 function toggleMenu(postId) {
     const menu = document.getElementById('menu-' + postId);
     const allMenus = document.querySelectorAll('[id^="menu-"]');
+    const currentArticle = menu.closest('article');
+    const allArticles = document.querySelectorAll('article');
+    
+    // Reset all articles z-index
+    allArticles.forEach(article => {
+        article.style.zIndex = '';
+        article.style.position = '';
+    });
     
     // Close all other menus
     allMenus.forEach(m => {
@@ -232,8 +240,11 @@ function toggleMenu(postId) {
     
     // Toggle current menu with animation
     if (menu.classList.contains('hidden')) {
+        // Set high z-index for current article
+        currentArticle.style.position = 'relative';
+        currentArticle.style.zIndex = '9999';
+        
         menu.classList.remove('hidden');
-        // Small delay to trigger animation
         setTimeout(() => {
             menu.classList.remove('opacity-0', 'scale-95');
             menu.classList.add('opacity-100', 'scale-100');
@@ -241,9 +252,11 @@ function toggleMenu(postId) {
     } else {
         menu.classList.remove('opacity-100', 'scale-100');
         menu.classList.add('opacity-0', 'scale-95');
-        // Wait for animation to complete before hiding
         setTimeout(() => {
             menu.classList.add('hidden');
+            // Reset z-index after hiding
+            currentArticle.style.zIndex = '';
+            currentArticle.style.position = '';
         }, 150);
     }
 }
